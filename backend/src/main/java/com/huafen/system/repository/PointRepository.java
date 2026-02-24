@@ -39,4 +39,13 @@ public interface PointRepository extends JpaRepository<Point, Long>, JpaSpecific
             @Param("type") PointType type,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate);
+
+    /**
+     * 统计用户在指定时间范围内的总积分
+     */
+    @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Point p WHERE p.user.id = :userId AND p.createdAt >= :startDate AND p.createdAt < :endDate")
+    int sumByUserIdAndCreatedAtBetween(
+            @Param("userId") Long userId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate);
 }
