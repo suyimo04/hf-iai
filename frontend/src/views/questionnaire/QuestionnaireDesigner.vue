@@ -76,6 +76,7 @@
       <FieldPropertyEditor
         v-if="selectedField"
         :field="selectedField"
+        :all-fields="questionnaire.fields"
         @update="updateField"
       />
       <div v-else class="no-selection">

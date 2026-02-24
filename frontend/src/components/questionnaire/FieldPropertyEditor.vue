@@ -49,12 +49,6 @@
         <el-form-item label="占位提示">
           <el-input v-model="validationRules.placeholder" placeholder="请输入..." />
         </el-form-item>
-        <el-form-item label="最大长度">
-          <el-input-number v-model="validationRules.maxLength" :min="1" :max="2000" />
-        </el-form-item>
-        <el-form-item label="最小长度">
-          <el-input-number v-model="validationRules.minLength" :min="0" :max="2000" />
-        </el-form-item>
       </template>
 
       <!-- 数字字段配置 -->
@@ -82,6 +76,50 @@
           </el-select>
         </el-form-item>
       </template>
+
+      <!-- 条件逻辑配置 -->
+      <el-divider>显示条件</el-divider>
+      <div class="condition-editor">
+        <el-switch v-model="hasCondition" active-text="启用条件显示" />
+
+        <template v-if="hasCondition">
+          <div class="condition-row">
+            <el-select v-model="condition.field" placeholder="选择字段" style="width: 100%; margin-top: 12px;">
+              <el-option v-for="f in otherFields" :key="f.fieldKey" :label="f.label" :value="f.fieldKey" />
+            </el-select>
+            <el-select v-model="condition.operator" placeholder="条件" style="width: 100%; margin-top: 8px;">
+              <el-option label="等于" value="equals" />
+              <el-option label="不等于" value="notEquals" />
+              <el-option label="包含" value="contains" />
+              <el-option label="为空" value="isEmpty" />
+              <el-option label="不为空" value="isNotEmpty" />
+            </el-select>
+            <el-input
+              v-if="needsValue"
+              v-model="condition.value"
+              placeholder="值"
+              style="margin-top: 8px;"
+            />
+          </div>
+        </template>
+      </div>
+
+      <!-- 校验规则配置 -->
+      <el-divider>校验规则</el-divider>
+      <div class="validation-editor">
+        <el-form-item label="最小长度" v-if="isTextField">
+          <el-input-number v-model="validation.minLength" :min="0" />
+        </el-form-item>
+        <el-form-item label="最大长度" v-if="isTextField">
+          <el-input-number v-model="validation.maxLength" :min="0" />
+        </el-form-item>
+        <el-form-item label="正则表达式" v-if="isTextField">
+          <el-input v-model="validation.pattern" placeholder="如: ^[a-zA-Z]+$" />
+        </el-form-item>
+        <el-form-item label="自定义错误提示">
+          <el-input v-model="validation.message" placeholder="校验失败时的提示信息" />
+        </el-form-item>
+      </div>
     </el-form>
   </div>
 </template>
@@ -97,6 +135,7 @@ defineOptions({
 
 const props = defineProps<{
   field: QuestionnaireField
+  allFields?: QuestionnaireField[]
 }>()
 
 const emit = defineEmits<{
@@ -108,15 +147,49 @@ const localField = ref<QuestionnaireField>({ ...props.field })
 const validationRules = ref<Record<string, any>>({ ...props.field.validationRules })
 const localOptions = ref<string[]>([])
 
+// 条件逻辑
+const hasCondition = ref(false)
+const condition = ref<{ field: string; operator: string; value: string }>({
+  field: '',
+  operator: 'equals',
+  value: ''
+})
+
+// 校验规则
+const validation = ref<{
+  minLength?: number
+  maxLength?: number
+  pattern?: string
+  message?: string
+}>({})
+
 // 是否有选项配置
 const hasOptions = computed(() => {
   return ['SINGLE_CHOICE', 'MULTIPLE_CHOICE', 'DROPDOWN'].includes(localField.value.fieldType)
+})
+
+// 是否为文本字段
+const isTextField = computed(() => {
+  return localField.value.fieldType === 'TEXT'
+})
+
+// 其他字段（排除当前字段）
+const otherFields = computed(() => {
+  if (!props.allFields) return []
+  return props.allFields.filter(f => f.fieldKey !== localField.value.fieldKey && f.fieldType !== 'GROUP')
+})
+
+// 条件是否需要值输入
+const needsValue = computed(() => {
+  return !['isEmpty', 'isNotEmpty'].includes(condition.value.operator)
 })
 
 // 初始化选项
 watch(() => props.field, (newField) => {
   localField.value = { ...newField }
   validationRules.value = { ...newField.validationRules }
+
+  // 初始化选项
   if (newField.options) {
     localOptions.value = newField.options.map((o: any) =>
       typeof o === 'string' ? o : o.label || o.value
@@ -124,14 +197,42 @@ watch(() => props.field, (newField) => {
   } else {
     localOptions.value = []
   }
+
+  // 初始化条件逻辑
+  if (newField.conditionLogic && Object.keys(newField.conditionLogic).length > 0) {
+    hasCondition.value = true
+    condition.value = {
+      field: newField.conditionLogic.field || '',
+      operator: newField.conditionLogic.operator || 'equals',
+      value: newField.conditionLogic.value || ''
+    }
+  } else {
+    hasCondition.value = false
+    condition.value = { field: '', operator: 'equals', value: '' }
+  }
+
+  // 初始化校验规则
+  validation.value = {
+    minLength: newField.validationRules?.minLength,
+    maxLength: newField.validationRules?.maxLength,
+    pattern: newField.validationRules?.pattern,
+    message: newField.validationRules?.message
+  }
 }, { immediate: true, deep: true })
 
 // 监听变化并触发更新
-watch([localField, validationRules, localOptions], () => {
+watch([localField, validationRules, localOptions, hasCondition, condition, validation], () => {
   const updated: QuestionnaireField = {
     ...localField.value,
-    validationRules: { ...validationRules.value },
-    options: hasOptions.value ? localOptions.value.map(opt => ({ label: opt, value: opt })) : undefined
+    validationRules: {
+      ...validationRules.value,
+      minLength: validation.value.minLength,
+      maxLength: validation.value.maxLength,
+      pattern: validation.value.pattern,
+      message: validation.value.message
+    },
+    options: hasOptions.value ? localOptions.value.map(opt => ({ label: opt, value: opt })) : undefined,
+    conditionLogic: hasCondition.value ? { ...condition.value } : undefined
   }
   emit('update', updated)
 }, { deep: true })
@@ -175,6 +276,20 @@ function removeOption(index: number) {
 
 .option-item .el-input {
   flex: 1;
+}
+
+.condition-editor {
+  padding: 8px 0;
+}
+
+.condition-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.validation-editor {
+  padding: 8px 0;
 }
 
 :deep(.el-form-item) {
