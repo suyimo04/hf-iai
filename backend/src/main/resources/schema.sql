@@ -346,3 +346,63 @@ CREATE TABLE IF NOT EXISTS permission_change_log (
     INDEX idx_perm_change_created_at (created_at),
     CONSTRAINT fk_perm_change_changer FOREIGN KEY (changed_by) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 22. 问卷表
+CREATE TABLE IF NOT EXISTS questionnaires (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(200) NOT NULL,
+    description TEXT,
+    status VARCHAR(20) NOT NULL DEFAULT 'DRAFT',
+    access_type VARCHAR(20) NOT NULL DEFAULT 'INTERNAL',
+    public_token VARCHAR(64) UNIQUE,
+    version INT DEFAULT 1,
+    created_by BIGINT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_questionnaires_status (status),
+    INDEX idx_questionnaires_access_type (access_type),
+    INDEX idx_questionnaires_public_token (public_token),
+    INDEX idx_questionnaires_created_by (created_by),
+    CONSTRAINT fk_questionnaires_creator FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 23. 问卷字段表
+CREATE TABLE IF NOT EXISTS questionnaire_fields (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    questionnaire_id BIGINT NOT NULL,
+    field_key VARCHAR(50) NOT NULL,
+    label VARCHAR(200) NOT NULL,
+    field_type VARCHAR(20) NOT NULL,
+    options JSON,
+    validation_rules JSON,
+    required TINYINT(1) DEFAULT 0,
+    sort_order INT DEFAULT 0,
+    condition_logic JSON,
+    group_id BIGINT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_fields_questionnaire_id (questionnaire_id),
+    INDEX idx_fields_field_key (field_key),
+    INDEX idx_fields_sort_order (sort_order),
+    CONSTRAINT fk_fields_questionnaire FOREIGN KEY (questionnaire_id) REFERENCES questionnaires(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 24. 问卷响应表
+CREATE TABLE IF NOT EXISTS questionnaire_responses (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    questionnaire_id BIGINT NOT NULL,
+    questionnaire_version INT,
+    user_id BIGINT,
+    respondent_info JSON,
+    answers JSON NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'SUBMITTED',
+    auto_created_user_id BIGINT,
+    ip_address VARCHAR(50),
+    user_agent VARCHAR(500),
+    submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_responses_questionnaire_id (questionnaire_id),
+    INDEX idx_responses_user_id (user_id),
+    INDEX idx_responses_status (status),
+    INDEX idx_responses_submitted_at (submitted_at),
+    CONSTRAINT fk_responses_questionnaire FOREIGN KEY (questionnaire_id) REFERENCES questionnaires(id) ON DELETE CASCADE,
+    CONSTRAINT fk_responses_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
