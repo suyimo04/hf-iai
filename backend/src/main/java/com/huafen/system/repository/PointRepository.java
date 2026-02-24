@@ -14,11 +14,11 @@ import java.util.List;
 @Repository
 public interface PointRepository extends JpaRepository<Point, Long>, JpaSpecificationExecutor<Point> {
 
-    List<Point> findByUserId(Long userId);
+    List<Point> findByUser_Id(Long userId);
 
-    List<Point> findByUserIdAndType(Long userId, PointType type);
+    List<Point> findByUser_IdAndType(Long userId, PointType type);
 
-    @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Point p WHERE p.userId = :userId")
+    @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Point p WHERE p.user.id = :userId")
     Integer sumByUserId(@Param("userId") Long userId);
 
     @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Point p")
@@ -29,4 +29,14 @@ public interface PointRepository extends JpaRepository<Point, Long>, JpaSpecific
 
     @Query("SELECT FUNCTION('DATE', p.createdAt) as date, COALESCE(SUM(p.amount), 0) as total FROM Point p WHERE p.createdAt >= :startDate GROUP BY FUNCTION('DATE', p.createdAt) ORDER BY date")
     List<Object[]> sumByDateRange(@Param("startDate") LocalDateTime startDate);
+
+    /**
+     * 统计用户在指定时间范围内的签到次数
+     */
+    @Query("SELECT COUNT(p) FROM Point p WHERE p.user.id = :userId AND p.type = :type AND p.createdAt >= :startDate AND p.createdAt < :endDate")
+    int countByUserIdAndTypeAndCreatedAtBetween(
+            @Param("userId") Long userId,
+            @Param("type") PointType type,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate);
 }
