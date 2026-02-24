@@ -263,3 +263,86 @@ ALTER TABLE salaries ADD COLUMN IF NOT EXISTS checkin_count INT DEFAULT 0 AFTER 
 ALTER TABLE salaries ADD COLUMN IF NOT EXISTS checkin_points INT DEFAULT 0 AFTER checkin_count;
 ALTER TABLE salaries ADD COLUMN IF NOT EXISTS checkin_coins INT DEFAULT 0 AFTER checkin_points;
 ALTER TABLE salaries ADD COLUMN IF NOT EXISTS pool_allocation DECIMAL(10,2) DEFAULT 0.00 AFTER checkin_coins;
+
+-- 16. 菜单表（支持三级菜单）
+CREATE TABLE IF NOT EXISTS menu (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    parent_id BIGINT DEFAULT 0,
+    name VARCHAR(50) NOT NULL,
+    path VARCHAR(200),
+    component VARCHAR(200),
+    icon VARCHAR(50),
+    sort_order INT DEFAULT 0,
+    visible TINYINT(1) DEFAULT 1,
+    status TINYINT(1) DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_menu_parent_id (parent_id),
+    INDEX idx_menu_sort (sort_order)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 17. 权限表
+CREATE TABLE IF NOT EXISTS permission (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    menu_id BIGINT,
+    name VARCHAR(50) NOT NULL,
+    code VARCHAR(100) NOT NULL UNIQUE,
+    description VARCHAR(200),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_permission_menu_id (menu_id),
+    INDEX idx_permission_code (code),
+    CONSTRAINT fk_permission_menu FOREIGN KEY (menu_id) REFERENCES menu(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 18. 角色菜单关联表
+CREATE TABLE IF NOT EXISTS role_menu (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    role VARCHAR(20) NOT NULL,
+    menu_id BIGINT NOT NULL,
+    UNIQUE INDEX uk_role_menu (role, menu_id),
+    INDEX idx_role_menu_role (role),
+    CONSTRAINT fk_role_menu_menu FOREIGN KEY (menu_id) REFERENCES menu(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 19. 角色权限关联表
+CREATE TABLE IF NOT EXISTS role_permission (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    role VARCHAR(20) NOT NULL,
+    permission_id BIGINT NOT NULL,
+    UNIQUE INDEX uk_role_permission (role, permission_id),
+    INDEX idx_role_permission_role (role),
+    CONSTRAINT fk_role_permission_perm FOREIGN KEY (permission_id) REFERENCES permission(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 20. 角色变更日志表
+CREATE TABLE IF NOT EXISTS role_change_log (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    from_role VARCHAR(20),
+    to_role VARCHAR(20),
+    reason VARCHAR(500),
+    changed_by BIGINT NOT NULL,
+    ip_address VARCHAR(50),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_role_change_user_id (user_id),
+    INDEX idx_role_change_changed_by (changed_by),
+    INDEX idx_role_change_created_at (created_at),
+    CONSTRAINT fk_role_change_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_role_change_changer FOREIGN KEY (changed_by) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 21. 权限变更日志表
+CREATE TABLE IF NOT EXISTS permission_change_log (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    role VARCHAR(20) NOT NULL,
+    change_type VARCHAR(20) NOT NULL COMMENT 'MENU_GRANT, MENU_REVOKE, PERM_GRANT, PERM_REVOKE',
+    target_id BIGINT NOT NULL,
+    target_name VARCHAR(100),
+    changed_by BIGINT NOT NULL,
+    ip_address VARCHAR(50),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_perm_change_role (role),
+    INDEX idx_perm_change_type (change_type),
+    INDEX idx_perm_change_changed_by (changed_by),
+    INDEX idx_perm_change_created_at (created_at),
+    CONSTRAINT fk_perm_change_changer FOREIGN KEY (changed_by) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
