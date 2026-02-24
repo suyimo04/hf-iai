@@ -223,3 +223,43 @@ CREATE TABLE IF NOT EXISTS ai_interview_score (
     INDEX idx_ai_score_session_id (session_id),
     CONSTRAINT fk_ai_score_session FOREIGN KEY (session_id) REFERENCES ai_interview_session(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 14. 成员流转日志表
+CREATE TABLE IF NOT EXISTS member_flow_log (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    from_role VARCHAR(20),
+    to_role VARCHAR(20),
+    trigger_type VARCHAR(20) COMMENT 'AUTO-自动, MANUAL-手动',
+    reason VARCHAR(500),
+    approved_by BIGINT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_flow_user_id (user_id),
+    INDEX idx_flow_trigger_type (trigger_type),
+    INDEX idx_flow_created_at (created_at),
+    CONSTRAINT fk_flow_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_flow_approver FOREIGN KEY (approved_by) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 15. 月度绩效跟踪表
+CREATE TABLE IF NOT EXISTS monthly_performance (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    period VARCHAR(7) NOT NULL COMMENT 'YYYY-MM格式',
+    total_points INT DEFAULT 0,
+    checkin_count INT DEFAULT 0,
+    consecutive_low_months INT DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_perf_user_id (user_id),
+    INDEX idx_perf_period (period),
+    UNIQUE INDEX uk_user_period (user_id, period),
+    CONSTRAINT fk_perf_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 薪酬表增强字段 (ALTER语句，用于已存在的表升级)
+-- 如果是新建数据库，建议直接在salaries表CREATE语句中包含这些字段
+ALTER TABLE salaries ADD COLUMN IF NOT EXISTS checkin_count INT DEFAULT 0 AFTER deduction;
+ALTER TABLE salaries ADD COLUMN IF NOT EXISTS checkin_points INT DEFAULT 0 AFTER checkin_count;
+ALTER TABLE salaries ADD COLUMN IF NOT EXISTS checkin_coins INT DEFAULT 0 AFTER checkin_points;
+ALTER TABLE salaries ADD COLUMN IF NOT EXISTS pool_allocation DECIMAL(10,2) DEFAULT 0.00 AFTER checkin_coins;
