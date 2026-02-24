@@ -53,3 +53,8 @@ springdoc:
     path: /api-docs
   swagger-ui:
     path: /swagger-ui.html
+
+# 配置加密密钥 (生产环境应使用环境变量)
+config:
+  encryption:
+    key: huafen-aes256-gcm-secret-key-32b
