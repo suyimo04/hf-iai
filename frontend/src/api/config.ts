@@ -21,3 +21,18 @@ export function getConfig(key: string) {
 export function updateConfig(key: string, value: string) {
   return request.put<ApiResponse<SystemConfig>>('/config', { key, value })
 }
+
+// 测试AI连接
+export function testAIConnection(config: Record<string, any>) {
+  return request.post<ApiResponse<string>>('/config/test/ai', config).then(res => res.data?.data || '连接成功')
+}
+
+// 测试OSS连接
+export function testOSSConnection(config: Record<string, any>) {
+  return request.post<ApiResponse<string>>('/config/test/oss', config).then(res => res.data?.data || '连接成功')
+}
+
+// 测试邮件连接
+export function testEmailConnection(config: Record<string, any>) {
+  return request.post<ApiResponse<string>>('/config/test/email', config).then(res => res.data?.data || '连接成功')
+}
