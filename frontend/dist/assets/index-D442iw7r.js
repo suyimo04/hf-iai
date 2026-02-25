@@ -1,0 +1,1 @@
+import{d as s,c as n,a as o,o as t}from"./index-CmNownPy.js";const a={class:"logs"},p=s({__name:"index",setup(l){return(r,e)=>(t(),n("div",a,[...e[0]||(e[0]=[o("h2",null,"操作日志",-1),o("p",null,"操作日志页面开发中...",-1)])]))}});export{p as default};

@@ -1,0 +1,1 @@
+import{d as s,c as a,a as o,o as n}from"./index-CmNownPy.js";const t={class:"dashboard"},c=s({__name:"index",setup(r){return(d,e)=>(n(),a("div",t,[...e[0]||(e[0]=[o("h2",null,"数据看板",-1),o("p",null,"欢迎使用花粉俱乐部管理系统",-1)])]))}});export{c as default};

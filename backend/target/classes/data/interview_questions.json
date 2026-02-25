@@ -1,0 +1,45 @@
+[
+  {
+    "category": "基础知识",
+    "question": "花粉俱乐部是哪个品牌的用户社区？",
+    "questionType": "SINGLE_CHOICE",
+    "options": ["华为", "小米", "OPPO", "vivo"],
+    "answer": "华为",
+    "score": 10,
+    "sortOrder": 1
+  },
+  {
+    "category": "基础知识",
+    "question": "华为手机的AI语音助手叫什么名字？",
+    "questionType": "SINGLE_CHOICE",
+    "options": ["小爱同学", "小艺", "Siri", "小度"],
+    "answer": "小艺",
+    "score": 10,
+    "sortOrder": 2
+  },
+  {
+    "category": "基础知识",
+    "question": "华为鸿蒙操作系统的英文名称是什么？",
+    "questionType": "SINGLE_CHOICE",
+    "options": ["MIUI", "HarmonyOS", "ColorOS", "EMUI"],
+    "answer": "HarmonyOS",
+    "score": 10,
+    "sortOrder": 3
+  },
+  {
+    "category": "综合能力",
+    "question": "请简述你为什么想加入花粉小组？",
+    "questionType": "TEXT",
+    "keywords": ["热爱", "贡献", "学习", "成长", "团队", "华为", "花粉"],
+    "score": 20,
+    "sortOrder": 4
+  },
+  {
+    "category": "综合能力",
+    "question": "你认为作为花粉小组成员，应该具备哪些素质？",
+    "questionType": "TEXT",
+    "keywords": ["责任", "热情", "沟通", "协作", "学习", "创新", "服务"],
+    "score": 20,
+    "sortOrder": 5
+  }
+]

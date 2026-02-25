@@ -1,0 +1,1 @@
+import{d as s,c as n,a as t,o}from"./index-CmNownPy.js";const a={class:"activities"},l=s({__name:"index",setup(r){return(c,e)=>(o(),n("div",a,[...e[0]||(e[0]=[t("h2",null,"活动管理",-1),t("p",null,"活动管理页面开发中...",-1)])]))}});export{l as default};

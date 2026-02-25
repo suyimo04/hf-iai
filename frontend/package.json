@@ -11,7 +11,9 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
     "@stomp/stompjs": "^7.3.0",
+    "@types/dompurify": "^3.0.5",
     "axios": "^1.6.8",
+    "dompurify": "^3.3.1",
     "echarts": "^5.5.0",
     "element-plus": "^2.6.3",
     "pinia": "^2.1.7",

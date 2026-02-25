@@ -24,6 +24,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 
 interface Props {
   role: 'USER' | 'AI' | 'SYSTEM'
@@ -45,8 +46,12 @@ const avatarStyle = computed(() => ({
 }))
 
 const formattedContent = computed(() => {
-  // 简单markdown支持
-  return marked.parseInline(props.content || '')
+  // 使用 DOMPurify 净化 marked 输出，防止XSS攻击
+  const rawHtml = marked.parseInline(props.content || '') as string
+  return DOMPurify.sanitize(rawHtml, {
+    ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'code', 'pre', 'br', 'a'],
+    ALLOWED_ATTR: ['href', 'target', 'rel']
+  })
 })
 
 const formatTime = (time?: string) => {

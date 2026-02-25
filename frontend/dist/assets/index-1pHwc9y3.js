@@ -1,0 +1,1 @@
+import{d as o,c as t,a as n,o as a}from"./index-CmNownPy.js";const s={class:"application"},c=o({__name:"index",setup(l){return(p,e)=>(a(),t("div",s,[...e[0]||(e[0]=[n("h2",null,"申请加入",-1),n("p",null,"申请页面开发中...",-1)])]))}});export{c as default};

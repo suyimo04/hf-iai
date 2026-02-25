@@ -1,0 +1,1 @@
+import{d as t,c as n,a as s,o}from"./index-CmNownPy.js";const a={class:"settings"},p=t({__name:"index",setup(r){return(l,e)=>(o(),n("div",a,[...e[0]||(e[0]=[s("h2",null,"系统配置",-1),s("p",null,"系统配置页面开发中...",-1)])]))}});export{p as default};

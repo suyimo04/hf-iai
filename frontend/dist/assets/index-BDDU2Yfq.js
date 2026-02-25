@@ -1,0 +1,1 @@
+import{d as a,c as n,a as s,o}from"./index-CmNownPy.js";const t={class:"salary"},p=a({__name:"index",setup(r){return(l,e)=>(o(),n("div",t,[...e[0]||(e[0]=[s("h2",null,"薪酬管理",-1),s("p",null,"薪酬管理页面开发中...",-1)])]))}});export{p as default};
