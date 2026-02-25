@@ -1,0 +1,1 @@
+import{d as o,c as t,a as n,o as s}from"./index-CmNownPy.js";const a={class:"interview-config"},l=o({__name:"index",setup(r){return(c,e)=>(s(),t("div",a,[...e[0]||(e[0]=[n("h2",null,"面试配置",-1),n("p",null,"面试配置页面开发中...",-1)])]))}});export{l as default};

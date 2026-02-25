@@ -1,0 +1,95 @@
+/* Element Plus 主题覆盖变量 */
+
+:root {
+  /* 主色 */
+  --el-color-primary: #10b981;
+  --el-color-primary-light-3: #6ee7b7;
+  --el-color-primary-light-5: #a7f3d0;
+  --el-color-primary-light-7: #d1fae5;
+  --el-color-primary-light-8: #ecfdf5;
+  --el-color-primary-light-9: #f0fdf4;
+  --el-color-primary-dark-2: #059669;
+
+  /* 成功色 */
+  --el-color-success: #10b981;
+  --el-color-success-light-3: #6ee7b7;
+  --el-color-success-light-5: #a7f3d0;
+  --el-color-success-light-7: #d1fae5;
+  --el-color-success-light-8: #ecfdf5;
+  --el-color-success-light-9: #f0fdf4;
+  --el-color-success-dark-2: #059669;
+
+  /* 圆角 */
+  --el-border-radius-base: 8px;
+  --el-border-radius-small: 6px;
+  --el-border-radius-round: 12px;
+
+  /* 阴影 */
+  --el-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  --el-box-shadow-light: 0 2px 12px rgba(0, 0, 0, 0.04);
+  --el-box-shadow-lighter: 0 1px 6px rgba(0, 0, 0, 0.03);
+  --el-box-shadow-dark: 0 8px 30px rgba(0, 0, 0, 0.1);
+
+  /* 背景色 */
+  --el-bg-color: rgba(255, 255, 255, 0.8);
+  --el-bg-color-overlay: rgba(255, 255, 255, 0.9);
+  --el-bg-color-page: transparent;
+
+  /* 边框色 */
+  --el-border-color: rgba(0, 0, 0, 0.08);
+  --el-border-color-light: rgba(0, 0, 0, 0.05);
+  --el-border-color-lighter: rgba(0, 0, 0, 0.03);
+
+  /* 文字色 */
+  --el-text-color-primary: #1f2937;
+  --el-text-color-regular: #4b5563;
+  --el-text-color-secondary: #6b7280;
+  --el-text-color-placeholder: #9ca3af;
+
+  /* 按钮 */
+  --el-button-hover-bg-color: var(--el-color-primary-light-9);
+  --el-button-hover-border-color: var(--el-color-primary-light-5);
+}
+
+/* Element Plus 组件样式覆盖 */
+.el-button--primary {
+  --el-button-bg-color: var(--el-color-primary);
+  --el-button-border-color: var(--el-color-primary);
+  --el-button-hover-bg-color: var(--el-color-primary-light-3);
+  --el-button-hover-border-color: var(--el-color-primary-light-3);
+  --el-button-active-bg-color: var(--el-color-primary-dark-2);
+  --el-button-active-border-color: var(--el-color-primary-dark-2);
+}
+
+.el-card {
+  --el-card-bg-color: rgba(255, 255, 255, 0.8);
+  --el-card-border-color: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.el-dialog {
+  --el-dialog-bg-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--border-radius-lg);
+}
+
+.el-input__wrapper {
+  background-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08) inset;
+}
+
+.el-input__wrapper:hover {
+  box-shadow: 0 0 0 1px var(--el-color-primary-light-5) inset;
+}
+
+.el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 1px var(--el-color-primary) inset;
+}
+
+.el-table {
+  --el-table-bg-color: transparent;
+  --el-table-tr-bg-color: rgba(255, 255, 255, 0.5);
+  --el-table-header-bg-color: rgba(255, 255, 255, 0.7);
+}

@@ -1,0 +1,3 @@
+# task-002: 创建Redis配置类
+
+创建RedisConfig配置类，配置RedisTemplate使用Jackson序列化，配置RedisCacheManager支持@Cacheable注解，添加Redis连接配置到application.yml
